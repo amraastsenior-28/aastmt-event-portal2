@@ -6,10 +6,33 @@
     <title>Browse Events | AASTMT Events</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/style.css">
+    <style>
+        /* Registration Modal Styles */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: linear-gradient(145deg, #0d1b30, #0a1525); border: 1px solid rgba(201,168,76,0.2); border-radius: 16px; width: 500px; max-width: 95vw; padding: 2rem; position: relative; color: #fff; max-height: 90vh; overflow-y: auto; }
+        .close-modal { position: absolute; top: 1rem; right: 1.5rem; font-size: 1.5rem; color: rgba(255,255,255,0.5); cursor: pointer; border: none; background: none; }
+        .close-modal:hover { color: #fff; }
+        .step { display: none; }
+        .step.active { display: block; }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 2rem; position: relative; }
+        .step-indicator::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.1); z-index: 0; }
+        .step-dot { width: 30px; height: 30px; border-radius: 50%; background: #0a1525; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; position: relative; z-index: 1; color: rgba(255,255,255,0.5); }
+        .step-dot.active { border-color: var(--aastmt-gold); color: var(--aastmt-gold); background: rgba(201,168,76,0.1); }
+        .step-dot.completed { background: var(--aastmt-gold); color: #000; border-color: var(--aastmt-gold); }
+        .ticket-option { border: 1px solid rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; cursor: pointer; transition: all 0.2s; }
+        .ticket-option:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.05); }
+        .ticket-option.selected { border-color: var(--aastmt-gold); background: rgba(201,168,76,0.1); }
+        .form-group { margin-bottom: 1rem; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 0.4rem; }
+        .form-group input { width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 0.95rem; }
+        .form-group input:focus { border-color: var(--aastmt-gold); outline: none; }
+        .form-row { display: flex; gap: 1rem; }
+        .form-row .form-group { flex: 1; }
+    </style>
 </head>
 <body class="with-sidebar">
 
-    <!-- ORIGINAL SIDEBAR HTML -->
     <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Open menu">
         <span></span><span></span><span></span>
     </button>
@@ -43,14 +66,12 @@
 
         <div class="sidebar-footer">
             <div class="user-pill">
-                <div class="user-avatar" style="overflow: hidden;">
-                    MM
-                </div>
+                <div class="user-avatar" style="overflow: hidden;">MM</div>
                 <div class="user-info">
                     <span class="user-name">Mohamed</span>
                     <span class="user-role">Student</span>
                 </div>
-                <a href="#" class="logout-btn" title="Sign out">
+                <a href="#" class="logout-btn" title="Sign out" onclick="alert('Static demo')">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                 </a>
             </div>
@@ -59,7 +80,6 @@
 
     <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-    <!-- ORIGINAL MAIN CONTENT -->
     <div class="main-content">
         <div class="topbar">
             <h2 class="topbar-title">Browse Events</h2>
@@ -100,21 +120,11 @@
                         <span class="event-category">Keynote</span>
                         <h2 class="event-title">Global Technology Summit</h2>
                         <div class="event-meta">
-                            <span class="meta-label">Date</span>
-                            <span>25 May 2026, 09:00 AM</span>
-                            <span class="meta-label">Venue</span>
-                            <span>Main Hall, Abu Qir Campus</span>
-                            <span class="meta-label">Capacity</span>
-                            <span>1200 seats <span class="text-remaining">— 312 remaining</span></span>
-                        </div>
-                        <div class="seats-bar-wrap">
-                            <div class="seats-bar">
-                                <div class="seats-bar-fill" style="width: 74%"></div>
-                            </div>
-                            <span class="seats-bar-label">74% filled</span>
+                            <span class="meta-label">Date</span><span>25 May 2026, 09:00 AM</span>
+                            <span class="meta-label">Venue</span><span>Main Hall, Abu Qir Campus</span>
                         </div>
                         <div class="event-footer">
-                            <button class="btn btn-primary" onclick="alert('This is a static demo. Registration logic requires the PHP backend.')">View Details</button>
+                            <button class="btn btn-primary" onclick="openRegModal('Global Technology Summit', '25 May 2026', 'Main Hall', 450, false)">Register</button>
                         </div>
                     </div>
                 </div>
@@ -129,21 +139,11 @@
                         <span class="event-category">Workshop</span>
                         <h2 class="event-title">Technology Startup Overview</h2>
                         <div class="event-meta">
-                            <span class="meta-label">Date</span>
-                            <span>02 Jun 2026, 10:00 AM</span>
-                            <span class="meta-label">Venue</span>
-                            <span>Smart Village Campus</span>
-                            <span class="meta-label">Capacity</span>
-                            <span>200 seats <span class="text-remaining">— 45 remaining</span></span>
-                        </div>
-                        <div class="seats-bar-wrap">
-                            <div class="seats-bar">
-                                <div class="seats-bar-fill" style="width: 77%"></div>
-                            </div>
-                            <span class="seats-bar-label">77% filled</span>
+                            <span class="meta-label">Date</span><span>02 Jun 2026, 10:00 AM</span>
+                            <span class="meta-label">Venue</span><span>Smart Village Campus</span>
                         </div>
                         <div class="event-footer">
-                            <button class="btn btn-primary" onclick="alert('This is a static demo. Registration logic requires the PHP backend.')">View Details</button>
+                            <button class="btn btn-primary" onclick="openRegModal('Technology Startup Overview', '02 Jun 2026', 'Smart Village', 200, false)">Register</button>
                         </div>
                     </div>
                 </div>
@@ -158,21 +158,106 @@
                         <span class="event-category">Seminar</span>
                         <h2 class="event-title">Smart Finance: Building Future</h2>
                         <div class="event-meta">
-                            <span class="meta-label">Date</span>
-                            <span>15 Jun 2026, 12:00 PM</span>
-                            <span class="meta-label">Venue</span>
-                            <span>Miami Campus, Hall 3</span>
-                            <span class="meta-label">Capacity</span>
-                            <span>150 seats <span class="text-remaining">— 10 remaining</span></span>
-                        </div>
-                        <div class="seats-bar-wrap">
-                            <div class="seats-bar">
-                                <div class="seats-bar-fill almost-full" style="width: 93%"></div>
-                            </div>
-                            <span class="seats-bar-label">93% filled</span>
+                            <span class="meta-label">Date</span><span>15 Jun 2026, 12:00 PM</span>
+                            <span class="meta-label">Venue</span><span>Miami Campus, Hall 3</span>
                         </div>
                         <div class="event-footer">
-                            <button class="btn btn-primary" onclick="alert('This is a static demo. Registration logic requires the PHP backend.')">View Details</button>
+                            <button class="btn btn-primary" onclick="openRegModal('Smart Finance: Building Future', '15 Jun 2026', 'Miami Campus', 150, false)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4 -->
+                <div class="event-card" data-category="Workshop">
+                    <div class="event-image-wrap">
+                        <img src="assets/images/ux.png" alt="UX Design Intensive" class="event-image">
+                        <span class="tier-badge tier-paid">Paid</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Workshop</span>
+                        <h2 class="event-title">UX Design Intensive</h2>
+                        <div class="event-meta">
+                            <span class="meta-label">Date</span><span>20 Jun 2026, 11:00 AM</span>
+                            <span class="meta-label">Venue</span><span>Online (Zoom)</span>
+                        </div>
+                        <div class="event-footer">
+                            <button class="btn btn-primary" onclick="openRegModal('UX Design Intensive', '20 Jun 2026', 'Online', 300, false)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 5 (FREE) -->
+                <div class="event-card" data-category="Excursion">
+                    <div class="event-image-wrap">
+                        <img src="assets/images/matruh.png" alt="Matruh Campus Tour" class="event-image">
+                        <span class="tier-badge tier-free" style="background:#10b981;">Free</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Excursion</span>
+                        <h2 class="event-title">Alamein Campus Tour</h2>
+                        <div class="event-meta">
+                            <span class="meta-label">Date</span><span>01 Jul 2026, 08:00 AM</span>
+                            <span class="meta-label">Venue</span><span>Alamein City Campus</span>
+                        </div>
+                        <div class="event-footer">
+                            <button class="btn btn-primary" onclick="openRegModal('Alamein Campus Tour', '01 Jul 2026', 'Alamein Campus', 0, true)">Register Free</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 6 (FREE) -->
+                <div class="event-card" data-category="Seminar">
+                    <div class="event-image-wrap">
+                        <img src="assets/images/sdg.png" alt="SDG Awareness" class="event-image">
+                        <span class="tier-badge tier-free" style="background:#10b981;">Free</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Seminar</span>
+                        <h2 class="event-title">SDG Awareness Seminar</h2>
+                        <div class="event-meta">
+                            <span class="meta-label">Date</span><span>10 Jul 2026, 01:00 PM</span>
+                            <span class="meta-label">Venue</span><span>Heliopolis Campus</span>
+                        </div>
+                        <div class="event-footer">
+                            <button class="btn btn-primary" onclick="openRegModal('SDG Awareness Seminar', '10 Jul 2026', 'Heliopolis Campus', 0, true)">Register Free</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 7 -->
+                <div class="event-card" data-category="Hybrid">
+                    <div class="event-image-wrap">
+                        <img src="assets/images/innovation-challenge.png" alt="Innovation Challenge" class="event-image">
+                        <span class="tier-badge tier-paid">Paid</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Hybrid</span>
+                        <h2 class="event-title">Innovation Challenge 2026</h2>
+                        <div class="event-meta">
+                            <span class="meta-label">Date</span><span>15 Aug 2026, 09:00 AM</span>
+                            <span class="meta-label">Venue</span><span>Abu Qir / Online</span>
+                        </div>
+                        <div class="event-footer">
+                            <button class="btn btn-primary" onclick="openRegModal('Innovation Challenge 2026', '15 Aug 2026', 'Abu Qir / Online', 250, false)">Register</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 8 (FREE) -->
+                <div class="event-card" data-category="Hybrid">
+                    <div class="event-image-wrap">
+                        <img src="assets/images/iti-webinar.png" alt="ITI Webinar" class="event-image">
+                        <span class="tier-badge tier-free" style="background:#10b981;">Free</span>
+                    </div>
+                    <div class="event-content">
+                        <span class="event-category">Hybrid</span>
+                        <h2 class="event-title">ITI Tech Webinar</h2>
+                        <div class="event-meta">
+                            <span class="meta-label">Date</span><span>20 Aug 2026, 06:00 PM</span>
+                            <span class="meta-label">Venue</span><span>Online</span>
+                        </div>
+                        <div class="event-footer">
+                            <button class="btn btn-primary" onclick="openRegModal('ITI Tech Webinar', '20 Aug 2026', 'Online', 0, true)">Register Free</button>
                         </div>
                     </div>
                 </div>
@@ -188,20 +273,207 @@
         </footer>
     </div>
 
+    <!-- Registration Modal Demo -->
+    <div class="modal-overlay" id="regModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeRegModal()">×</button>
+            <h2 id="modalEventTitle" style="margin-bottom:0.5rem; color:var(--aastmt-gold); font-size:1.3rem;">Event Title</h2>
+            <p id="modalEventMeta" style="font-size:0.85rem; color:rgba(255,255,255,0.5); margin-bottom:1.5rem;">Date | Venue</p>
+
+            <div class="step-indicator">
+                <div class="step-dot active" id="dot1">1</div>
+                <div class="step-dot" id="dot2">2</div>
+                <div class="step-dot" id="dot3">3</div>
+            </div>
+
+            <div id="step1" class="step active">
+                <h3 style="margin-bottom:1rem; font-size:1.1rem;">Select Ticket</h3>
+                <div id="paidOptions">
+                    <div class="ticket-option selected" onclick="selectTicket(this, 'Standard', false)">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="font-size:1.1rem;">Standard Access</strong>
+                            <span style="color:var(--aastmt-gold); font-weight:bold;" id="stdPrice">LE 150</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:0.4rem;">General admission seating and digital certificate.</p>
+                    </div>
+                    <div class="ticket-option" onclick="selectTicket(this, 'VIP', false)">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="font-size:1.1rem; color:var(--aastmt-gold);">VIP Access</strong>
+                            <span style="color:var(--aastmt-gold); font-weight:bold;" id="vipPrice">LE 450</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:0.4rem;">Front-row seating, networking lunch, and swag bag.</p>
+                    </div>
+                </div>
+                <div id="freeOptions" style="display:none;">
+                    <div class="ticket-option selected" onclick="selectTicket(this, 'Free', true)">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <strong style="font-size:1.1rem; color:#10b981;">General Admission (Free)</strong>
+                            <span style="color:#10b981; font-weight:bold;">LE 0</span>
+                        </div>
+                        <p style="font-size:0.8rem; color:rgba(255,255,255,0.5); margin-top:0.4rem;">Guaranteed entry.</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width:100%; margin-top:1rem;" onclick="nextStep(2)">Continue to Details</button>
+            </div>
+
+            <div id="step2" class="step">
+                <h3 style="margin-bottom:1rem; font-size:1.1rem;">Your Details</h3>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" value="Amr Abd Elsalam Mohamed" readonly>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Student ID</label>
+                        <input type="text" id="regID" value="211000123" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Faculty</label>
+                        <input type="text" value="Computer Science" readonly>
+                    </div>
+                </div>
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <button class="btn btn-outline" style="flex:1;" onclick="nextStep(1)">Back</button>
+                    <button class="btn btn-primary" style="flex:2;" onclick="nextStep(3)">Continue</button>
+                </div>
+            </div>
+
+            <div id="step3" class="step">
+                <h3 style="margin-bottom:1rem; font-size:1.1rem;">Payment / Confirmation</h3>
+                <div id="paymentForm">
+                    <p style="font-size:0.85rem; color:var(--aastmt-gold); margin-bottom:1rem; padding:0.75rem; background:rgba(201,168,76,0.1); border-radius:8px;">
+                        ⚠️ Note: This is a static UI demo. We will simulate a successful transaction and generate your ticket locally.
+                    </p>
+                    <div class="form-group">
+                        <label>Card Number</label>
+                        <input type="text" placeholder="XXXX XXXX XXXX XXXX">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Expiry</label>
+                            <input type="text" placeholder="MM/YY">
+                        </div>
+                        <div class="form-group">
+                            <label>CVC</label>
+                            <input type="text" placeholder="123">
+                        </div>
+                    </div>
+                </div>
+                <div id="freeConfirmForm" style="display:none; text-align:center; padding:2rem 0;">
+                    <p style="font-size:1.1rem; color:#10b981; margin-bottom:0.5rem;">Free Event</p>
+                    <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">No payment required. Click below to confirm registration.</p>
+                </div>
+                <div style="display:flex; gap:1rem; margin-top:1rem;">
+                    <button class="btn btn-outline" style="flex:1;" onclick="nextStep(2)">Back</button>
+                    <button class="btn btn-primary" style="flex:2; background:#10b981; border-color:#10b981;" onclick="submitRegistration()">Confirm & Pay</button>
+                </div>
+            </div>
+
+            <div id="step4" class="step" style="text-align:center; padding:2rem 0;">
+                <div style="width:60px; height:60px; border-radius:50%; background:rgba(16,185,129,0.1); color:#10b981; font-size:2rem; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">✓</div>
+                <h3 style="margin-bottom:0.5rem; font-size:1.5rem;">Registration Complete!</h3>
+                <p style="color:rgba(255,255,255,0.6); margin-bottom:2rem;">Your ticket has been generated and saved locally for this demo.</p>
+                <a href="dashboard.html" class="btn btn-primary">View My Tickets</a>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/app.js"></script>
     <script>
-        // Simple static filter logic
         function setFilter(category, btn) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            
-            document.querySelectorAll('.event-card').forEach(card => {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.style.display = 'flex';
+            document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            document.querySelectorAll(".event-card").forEach(card => {
+                if (category === "all" || card.getAttribute("data-category") === category) {
+                    card.style.display = "flex";
                 } else {
-                    card.style.display = 'none';
+                    card.style.display = "none";
                 }
             });
+        }
+
+        let currentEvent = null;
+        let selectedTicketType = "Standard";
+        let currentPrice = 0;
+        let isFree = false;
+
+        function openRegModal(title, date, venue, price, free) {
+            currentEvent = { title, date, venue };
+            currentPrice = price;
+            isFree = free;
+
+            document.getElementById("modalEventTitle").innerText = title;
+            document.getElementById("modalEventMeta").innerText = date + " | " + venue;
+
+            if (free) {
+                document.getElementById("paidOptions").style.display = "none";
+                document.getElementById("freeOptions").style.display = "block";
+                document.getElementById("paymentForm").style.display = "none";
+                document.getElementById("freeConfirmForm").style.display = "block";
+                selectedTicketType = "Free";
+            } else {
+                document.getElementById("paidOptions").style.display = "block";
+                document.getElementById("freeOptions").style.display = "none";
+                document.getElementById("paymentForm").style.display = "block";
+                document.getElementById("freeConfirmForm").style.display = "none";
+                document.getElementById("stdPrice").innerText = "LE " + price;
+                document.getElementById("vipPrice").innerText = "LE " + (price + 300);
+                selectedTicketType = "Standard";
+                
+                const opts = document.getElementById("paidOptions").querySelectorAll(".ticket-option");
+                opts[0].classList.add("selected");
+                opts[1].classList.remove("selected");
+            }
+
+            document.getElementById("regModal").classList.add("active");
+            goToStep(1);
+        }
+
+        function closeRegModal() {
+            document.getElementById("regModal").classList.remove("active");
+        }
+
+        function selectTicket(el, type, free) {
+            el.parentElement.querySelectorAll(".ticket-option").forEach(opt => opt.classList.remove("selected"));
+            el.classList.add("selected");
+            selectedTicketType = type;
+            if(!free) {
+                currentPrice = type === "VIP" ? parseInt(document.getElementById("vipPrice").innerText.replace("LE ", "")) : parseInt(document.getElementById("stdPrice").innerText.replace("LE ", ""));
+            }
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+            document.getElementById("step" + step).classList.add("active");
+            for(let i=1; i<=3; i++) {
+                let dot = document.getElementById("dot"+i);
+                if(dot) {
+                    if (i < step) { dot.classList.add("completed"); dot.classList.remove("active"); }
+                    else if (i === step) { dot.classList.add("active"); dot.classList.remove("completed"); }
+                    else { dot.classList.remove("active"); dot.classList.remove("completed"); }
+                }
+            }
+        }
+
+        function nextStep(step) { goToStep(step); }
+
+        function submitRegistration() {
+            let ref = "REF-" + Math.random().toString(36).substr(2, 6).toUpperCase();
+            let newTicket = {
+                title: currentEvent.title,
+                date: currentEvent.date,
+                venue: currentEvent.venue,
+                ticket: selectedTicketType + " — " + (isFree ? "Free" : currentPrice + " LE"),
+                ref: ref,
+                status: "Confirmed"
+            };
+            
+            let tickets = JSON.parse(localStorage.getItem("demoTickets")) || [];
+            tickets.unshift(newTicket);
+            localStorage.setItem("demoTickets", JSON.stringify(tickets));
+
+            goToStep(4);
+            document.querySelector(".step-indicator").style.display = "none";
         }
     </script>
 </body>

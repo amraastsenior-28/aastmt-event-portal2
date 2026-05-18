@@ -84,7 +84,8 @@
 
                 <!-- Tickets List -->
                 <div>
-                    <h2 style="margin-bottom: 1.5rem;">Active Tickets <span style="font-size:1rem; color:var(--text-secondary); font-weight:400;">(2)</span></h2>
+                    <h2 style="margin-bottom: 1.5rem;">Active Tickets <span id="tickets-count" style="font-size:1rem; color:var(--text-secondary); font-weight:400;">(2)</span></h2>
+<div id="tickets-wrapper"></div>
 
                     <div class="ticket-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; margin-bottom:1rem;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
@@ -149,5 +150,41 @@
     </div>
 
     <script src="assets/app.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let tickets = JSON.parse(localStorage.getItem("demoTickets")) || [];
+            if(tickets.length > 0) {
+                let container = document.getElementById("tickets-wrapper");
+                if(container) {
+                    tickets.forEach(t => {
+                        let html = `<div class="ticket-card" style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1.5rem; margin-bottom:1rem; position:relative; overflow:hidden;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--aastmt-gold);"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+                                <div class="ticket-info" style="flex: 1;">
+                                    <h3 style="font-size:1.1rem; margin-bottom:0.75rem; color:#fff;">${t.title}</h3>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.25rem;"><span class="meta-label" style="display:inline-block; width:50px;">Date:</span> ${t.date}</p>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.25rem;"><span class="meta-label" style="display:inline-block; width:50px;">Venue:</span> ${t.venue}</p>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.25rem;"><span class="meta-label" style="display:inline-block; width:50px;">Ticket:</span> ${t.ticket}</p>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary);"><span class="meta-label" style="display:inline-block; width:50px;">Ref:</span> <code style="font-size:0.8rem; color:var(--aastmt-gold);">${t.ref}</code></p>
+                                </div>
+                                <div style="text-align: right; display:flex; flex-direction:column; align-items:flex-end; gap:0.75rem;">
+                                    <span class="badge badge-success" style="background:rgba(16,185,129,0.1); color:#10b981; padding:0.25rem 0.75rem; border-radius:4px; font-size:0.75rem; font-weight:600;">✓ Confirmed</span>
+                                    <a href="#" class="btn btn-outline" style="padding: 0.5rem 1rem;" onclick="alert('Static demo: Ticket rendering disabled')">View Ticket</a>
+                                </div>
+                            </div>
+                        </div>`;
+                        container.insertAdjacentHTML("afterbegin", html);
+                    });
+                }
+                
+                let countLabel = document.getElementById("tickets-count");
+                if(countLabel) {
+                    countLabel.innerText = "(" + (2 + tickets.length) + ")";
+                }
+            }
+        });
+    </script>
+
 </body>
 </html>
