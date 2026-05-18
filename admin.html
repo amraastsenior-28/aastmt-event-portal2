@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AASTMT Command Center - Admin Demo</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #05080c;
+            --bg-card: rgba(10, 17, 28, 0.6);
+            --border-glass: rgba(201, 168, 76, 0.15);
+            --gold: #C9A84C;
+            --gold-hover: #e5c56e;
+            --text-light: #f8fafc;
+            --text-muted: #64748b;
+            --font-ui: 'Inter', sans-serif;
+            --font-accent: 'Outfit', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(at 100% 0%, rgba(201, 168, 76, 0.05) 0px, transparent 40%),
+                radial-gradient(at 0% 100%, rgba(10, 25, 47, 0.2) 0px, transparent 50%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 250px;
+            background: rgba(5, 8, 12, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+        }
+
+        .logo-box {
+            width: 36px;
+            height: 36px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px;
+        }
+
+        .logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-accent);
+            font-size: 0.95rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: #fff;
+        }
+
+        .brand-text p {
+            font-size: 0.6rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: var(--text-light);
+            background: rgba(201, 168, 76, 0.05);
+            border-left: 3px solid var(--gold);
+        }
+
+        .menu-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Main Content Panel */
+        .main-panel {
+            flex: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .dashboard-title h2 {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            font-weight: 700;
+            font-style: italic;
+            color: #fff;
+        }
+
+        .dashboard-title p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Stat Cards Grid */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            backdrop-filter: blur(8px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-family: var(--font-accent);
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .stat-trend {
+            font-size: 0.75rem;
+            color: #10b981;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        /* Content Sections Grid */
+        .section-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Common Dashboard Box */
+        .dash-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .box-title {
+            font-family: var(--font-accent);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Dynamic Registration Feed */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .feed-item {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(201,168,76,0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feed-info {
+            text-align: left;
+        }
+
+        .feed-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .feed-event {
+            font-size: 0.75rem;
+            color: var(--gold);
+            margin-top: 0.15rem;
+        }
+
+        .feed-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .badge-confirmed { background: rgba(16,185,129,0.1); color: #10b981; }
+        .badge-vip { background: rgba(201,168,76,0.1); color: var(--gold); }
+
+        /* Progress List (Capacity Tracking) */
+        .capacity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .capacity-item {
+            text-align: left;
+        }
+
+        .capacity-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .progress-bar-wrap {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold) 0%, #e5c56e 100%);
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Feedback Feed */
+        .feedback-item {
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .feedback-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .feedback-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .feedback-text {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #b2913b 100%);
+            border: none;
+            color: var(--bg-deep);
+            font-family: var(--font-accent);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--gold-hover) 0%, var(--gold) 100%);
+            transform: translateY(-1px);
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(6, 11, 19, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #0a111c;
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .input-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            background: rgba(6, 11, 19, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 6px;
+            padding: 0.6rem 0.85rem;
+            color: #ffffff;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="brand">
+            <div class="logo-box">
+                <img src="assets/images/logo.png" alt="AASTMT" onerror="this.src='https://i.imgur.com/kS9lS1f.png'">
+            </div>
+            <div class="brand-text">
+                <h1>AASTMT</h1>
+                <p>Command Center</p>
+            </div>
+        </div>
+        <ul class="menu-list">
+            <li class="menu-item active">
+                <span class="menu-icon">📊</span>
+                <span>Dashboard</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">📅</span>
+                <span>Events Admin</span>
+            </li>
+            <li class="menu-item">
+                <span class="menu-icon">👥</span>
+                <span>Attendee List</span>
+            </li>
+            <li class="menu-item" onclick="window.location.href='index.html'">
+                <span class="menu-icon">🚪</span>
+                <span>Student Portal</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+        
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <h2>The Brain</h2>
+                <p>Real-time analytics and student registration logistics</p>
+            </div>
+            <button class="btn" onclick="openCreateModal()">Create Event</button>
+        </div>
+
+        <!-- Stat Grid -->
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Revenue</span>
+                <span class="stat-value" id="revenueVal">85,250 EGP</span>
+                <span class="stat-trend">▲ +12% this week</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Attendee Registrations</span>
+                <span class="stat-value" id="registrationsVal">341</span>
+                <span class="stat-trend">▲ +24 new today</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Active Events</span>
+                <span class="stat-value" id="activeEventsVal">4</span>
+                <span class="stat-trend" style="color: var(--gold);">Gold Tier Prestige</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Satisfaction Index</span>
+                <span class="stat-value">94.8%</span>
+                <span class="stat-trend">▲ +1.2% rate</span>
+            </div>
+        </div>
+
+        <!-- Section Grid -->
+        <div class="section-grid">
+            
+            <!-- Left Side: Live Activity Stream -->
+            <div class="dash-box">
+                <div class="box-header">
+                    <span class="box-title">Live Registration Stream</span>
+                    <span style="font-size: 0.75rem; color: #10b981; display:flex; align-items:center; gap:0.25rem;">
+                        <span style="width:6px; height:6px; background:#10b981; border-radius:50%; display:inline-block; animation: pulse 1.5s infinite;"></span>
+                        Live Connection
+                    </span>
+                </div>
+                
+                <!-- Registration Logs Ticker container -->
+                <div class="feed-container" id="feedContainer">
+                    <!-- Log Item 1 -->
+                    <div class="feed-item">
+                        <div class="feed-info">
+                            <span class="feed-name">Sherif Hassan</span>
+                            <div class="feed-event">AASTMT Tech Summit 2026</div>
+                        </div>
+                        <span class="feed-badge badge-confirmed">Confirmed</span>
+                    </div>
+                    <!-- Log Item 2 -->
+                    <div class="feed-item">
+                        <div class="feed-info">
+                            <span class="feed-name">Nour El-Din</span>
+                            <div class="feed-event">UX/UI Design Intensive</div>
+                        </div>
+                        <span class="feed-badge badge-vip">VIP Pass</span>
+                    </div>
+                    <!-- Log Item 3 -->
+                    <div class="feed-item">
+                        <div class="feed-info">
+                            <span class="feed-name">Farida Aly</span>
+                            <div class="feed-event">Marsa Matruh Coastal Excursion</div>
+                        </div>
+                        <span class="feed-badge badge-confirmed">Confirmed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Logistic Metrics -->
+            <div>
+                <!-- Capacity tracker box -->
+                <div class="dash-box">
+                    <div class="box-header">
+                        <span class="box-title">Event Seat Capacities</span>
+                    </div>
+                    <div class="capacity-list" id="capacityList">
+                        <div class="capacity-item" data-event="Tech Summit">
+                            <div class="capacity-meta">
+                                <span>Tech Summit 2026</span>
+                                <span>142/200 booked</span>
+                            </div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width: 71%;"></div>
+                            </div>
+                        </div>
+                        <div class="capacity-item" data-event="UX Workshop">
+                            <div class="capacity-meta">
+                                <span>UX/UI Intensive</span>
+                                <span>85/100 booked</span>
+                            </div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                        <div class="capacity-item" data-event="Matruh Excursion">
+                            <div class="capacity-meta">
+                                <span>Marsa Matruh Coastal</span>
+                                <span>114/150 booked</span>
+                            </div>
+                            <div class="progress-bar-wrap">
+                                <div class="progress-bar-fill" style="width: 76%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feedback Ticker -->
+                <div class="dash-box">
+                    <div class="box-header">
+                        <span class="box-title">Student Voice</span>
+                    </div>
+                    <div id="feedbackContainer">
+                        <div class="feedback-item">
+                            <div class="feedback-meta">
+                                <span>Amr M.</span>
+                                <span>⭐⭐⭐⭐⭐</span>
+                            </div>
+                            <p class="feedback-text">"The dashboard integration is amazing! Booking process took me less than 2 minutes."</p>
+                        </div>
+                        <div class="feedback-item">
+                            <div class="feedback-meta">
+                                <span>Lina A.</span>
+                                <span>⭐⭐⭐⭐⭐</span>
+                            </div>
+                            <p class="feedback-text">"Avatar editor is so cool, worked perfectly with my custom image zoom settings!"</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Event Creator Modal -->
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 1.5rem; color:#fff; font-family:var(--font-accent);">Create New Event</h3>
+            
+            <div class="input-group">
+                <label class="input-label">Event Title</label>
+                <input type="text" class="input-field" id="eventTitle" placeholder="AASTMT Startup Pitch 2026">
+            </div>
+            
+            <div class="input-group">
+                <label class="input-label">Category</label>
+                <select class="input-field" id="eventCategory">
+                    <option value="summit">Summit</option>
+                    <option value="workshop">Workshop</option>
+                    <option value="excursion">Excursion</option>
+                </select>
+            </div>
+
+            <div style="display:flex; gap:1rem;">
+                <div class="input-group" style="flex:1;">
+                    <label class="input-label">Base Ticket Price (EGP)</label>
+                    <input type="number" class="input-field" id="eventPrice" placeholder="200">
+                </div>
+                <div class="input-group" style="flex:1;">
+                    <label class="input-label">Capacity Limit</label>
+                    <input type="number" class="input-field" id="eventCapacity" placeholder="100">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem;">
+                <button class="btn" style="background:rgba(255,255,255,0.05); color:#fff; border:1px solid var(--border-glass);" onclick="closeCreateModal()">Cancel</button>
+                <button class="btn" onclick="saveEventMock()">Create Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Interactive Simulated Engine -->
+    <script>
+        // Core Metric Variables
+        let totalRevenue = 85250;
+        let totalRegistrations = 341;
+        let activeEventsCount = 4;
+
+        // Open/Close Modal functions
+        function openCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+        }
+
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('active');
+        }
+
+        // Event Modal Save Handler
+        function saveEventMock() {
+            const title = document.getElementById('eventTitle').value;
+            const price = parseInt(document.getElementById('eventPrice').value) || 200;
+            const capacity = parseInt(document.getElementById('eventCapacity').value) || 100;
+            
+            if (!title) {
+                alert('Please enter an event title.');
+                return;
+            }
+
+            // Increment metrics
+            activeEventsCount++;
+            document.getElementById('activeEventsVal').innerText = activeEventsCount;
+
+            // Dynamically append new Event to capacity tracker list
+            const capList = document.getElementById('capacityList');
+            const item = document.createElement('div');
+            item.className = 'capacity-item';
+            item.innerHTML = `
+                <div class="capacity-meta">
+                    <span>${title}</span>
+                    <span>0/${capacity} booked</span>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" style="width: 0%;"></div>
+                </div>
+            `;
+            capList.appendChild(item);
+
+            closeCreateModal();
+            alert(`"${title}" has been successfully added to the active event ledger!`);
+        }
+
+        // Live Simulated Ticker Logs Stream (Interval updates)
+        const mockFirstNames = ["Kareem", "Yasmine", "Omar", "Hoda", "Tarek", "Sara", "Mahmoud", "Dina", "Mustafa", "May"];
+        const mockLastNames = ["Shaker", "Ezzat", "Rashed", "Salama", "Mansour", "Gomaa", "Hassan", "El-Demerdash"];
+        const mockEvents = ["AASTMT Tech Summit 2026", "UX/UI Design Intensive", "Marsa Matruh Coastal Excursion"];
+
+        setInterval(() => {
+            const firstName = mockFirstNames[Math.floor(Math.random() * mockFirstNames.length)];
+            const lastName = mockLastNames[Math.floor(Math.random() * mockLastNames.length)];
+            const event = mockEvents[Math.floor(Math.random() * mockEvents.length)];
+            
+            const isVip = Math.random() > 0.7;
+            const ticketPrice = event.includes("Matruh") ? 450 : (event.includes("Summit") ? 250 : 150);
+            const finalPrice = isVip ? ticketPrice + 200 : ticketPrice;
+
+            // 1. Update Metrics
+            totalRegistrations++;
+            totalRevenue += finalPrice;
+
+            document.getElementById('registrationsVal').innerText = totalRegistrations;
+            document.getElementById('revenueVal').innerText = totalRevenue.toLocaleString() + ' EGP';
+
+            // 2. Append new feed card
+            const feed = document.getElementById('feedContainer');
+            const logCard = document.createElement('div');
+            logCard.className = 'feed-item';
+            logCard.innerHTML = `
+                <div class="feed-info">
+                    <span class="feed-name">${firstName} ${lastName}</span>
+                    <div class="feed-event">${event}</div>
+                </div>
+                <span class="feed-badge ${isVip ? 'badge-vip' : 'badge-confirmed'}">${isVip ? 'VIP Pass' : 'Confirmed'}</span>
+            `;
+            
+            // Insert at top of list
+            feed.insertBefore(logCard, feed.firstChild);
+
+            // Limit list length
+            if (feed.children.length > 5) {
+                feed.removeChild(feed.lastChild);
+            }
+
+            // 3. Dynamically increment progress bar fills for visual aesthetic
+            if (event.includes("Summit")) {
+                updateProgress("Tech Summit", 200);
+            } else if (event.includes("UX")) {
+                updateProgress("UX Workshop", 100);
+            } else if (event.includes("Matruh")) {
+                updateProgress("Matruh Excursion", 150);
+            }
+
+        }, 4000); // Trigger a new simulated registration every 4 seconds
+
+        // Helper to update progress lists
+        function updateProgress(eventNameKey, capacityLimit) {
+            const items = document.querySelectorAll('.capacity-item');
+            items.forEach(item => {
+                if (item.getAttribute('data-event') === eventNameKey) {
+                    const textSpan = item.querySelector('.capacity-meta span:last-child');
+                    const fillBar = item.querySelector('.progress-bar-fill');
+                    
+                    const text = textSpan.innerText;
+                    const booked = parseInt(text.split('/')[0]) + 1;
+                    
+                    textSpan.innerText = `${booked}/${capacityLimit} booked`;
+                    
+                    const percentage = (booked / capacityLimit) * 100;
+                    fillBar.style.width = percentage + '%';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
